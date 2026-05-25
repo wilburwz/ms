@@ -1,0 +1,60 @@
+import type { KnowledgePoint } from '../types'
+
+export const browserData: KnowledgePoint[] = [
+  {
+    id: "br-01",
+    title: "浏览器渲染原理",
+    category: "browser",
+    difficulty: 2,
+    question: "请描述浏览器从输入 URL 到页面渲染的完整过程。",
+    answer: "1. URL 解析：判断搜索词还是 URL\n2. DNS 解析：域名 → IP（递归查询 + 缓存）\n3. TCP 连接：三次握手，HTTPS 还需 TLS 握手\n4. 发送 HTTP 请求：请求行 + 请求头 + 请求体\n5. 服务器处理：返回 HTML\n6. 浏览器解析渲染：\n   - 解析 HTML → DOM 树\n   - 解析 CSS → CSSOM 树\n   - DOM + CSSOM → Render 树\n   - Layout（布局/回流）：计算位置大小\n   - Paint（绘制）：填充像素\n   - Composite（合成）：图层合成显示\n7. TCP 断开：四次挥手\n\n关键优化点：\n- DOM/CSSOM 构建互不阻塞，但 JS 会阻塞 DOM\n- async/defer 控制脚本加载\n- CSS 在 head，JS 在 body 底部",
+    tags: ["浏览器", "渲染", "DOM", "CSSOM"],
+  },
+  {
+    id: "br-02",
+    title: "重排 (Reflow) 与重绘 (Repaint)",
+    category: "browser",
+    difficulty: 2,
+    question: "什么是重排和重绘？如何减少它们？",
+    answer: "重排 (Reflow)：元素几何属性变化，重新计算布局。\n触发：width/height/margin/padding/display/position/字体大小/窗口 resize 等\n\n重绘 (Repaint)：外观变化不影响布局，重新绘制。\n触发：color/background/border-color/visibility/outline 等\n\n关系：重排必定重绘，重绘不一定重排。\n\n减少策略：\n1. 批量修改样式（class 切换）\n2. 使用 transform 代替 top/left\n3. 使用 opacity 代替 visibility\n4. 离线 DOM（documentFragment/克隆节点）\n5. 避免逐条读取布局属性（强制刷新队列）\n6. position: absolute/fixed 脱离文档流\n7. will-change 提示",
+    tags: ["浏览器", "重排", "重绘", "性能"],
+  },
+  {
+    id: "br-03",
+    title: "浏览器事件模型",
+    category: "browser",
+    difficulty: 1,
+    question: "浏览器事件流的三个阶段是什么？事件委托的原理？",
+    answer: "事件流三阶段：\n1. 捕获阶段：从 window → document → 目标父元素\n2. 目标阶段：到达目标元素\n3. 冒泡阶段：从目标 → 父元素 → document → window\n\n事件委托 (Event Delegation)：\n- 利用事件冒泡，将子元素事件监听绑定到父元素\n- event.target 判断实际触发元素\n- 适合大量子元素的事件处理\n\n优势：\n- 减少内存占用（只需一个监听器）\n- 动态元素自动生效\n\nAPI：\n- addEventListener(type, handler, useCapture)\n- useCapture: true 在捕获阶段触发\n- e.stopPropagation()：阻止传播\n- e.preventDefault()：阻止默认行为",
+    codeExample: "// 事件委托\nul.addEventListener('click', (e) => {\n  const li = e.target.closest('li')\n  if (li) {\n    console.log('Clicked:', li.dataset.id)\n  }\n})\n\n// 停止传播\nbtn.addEventListener('click', (e) => {\n  e.stopPropagation() // 阻止冒泡\n})",
+    tags: ["浏览器", "事件", "事件委托", "冒泡", "捕获"],
+  },
+  {
+    id: "br-04",
+    title: "浏览器缓存策略",
+    category: "browser",
+    difficulty: 2,
+    question: "浏览器缓存有哪些策略？强缓存和协商缓存的区别？",
+    answer: "强缓存（不请求服务器）：\n- Cache-Control：max-age=3600, no-cache, no-store\n- Expires（HTTP/1.0，已被 Cache-Control 替代）\n\n协商缓存（需请求服务器）：\n- Last-Modified / If-Modified-Since\n- ETag / If-None-Match（更精确）\n- 返回 304 使用缓存，200 返回新资源\n\n优先级：Cache-Control > Expires > ETag > Last-Modified\n\n最佳实践：\n- HTML：no-cache（每次协商）\n- JS/CSS：contenthash + 长期强缓存\n- 图片/字体：长期强缓存 + 文件名哈希\n- API：no-store 或短 max-age\n\nCDN 缓存：\n- s-maxage：CDN 缓存时间\n- Vary：区分不同版本的缓存",
+    tags: ["浏览器", "缓存", "HTTP", "Cache-Control", "ETag"],
+  },
+  {
+    id: "br-05",
+    title: "浏览器安全：XSS 与 CSRF",
+    category: "browser",
+    difficulty: 2,
+    question: "什么是 XSS 和 CSRF 攻击？如何防范？",
+    answer: "XSS (Cross-Site Scripting)：注入恶意脚本到页面\n类型：\n- 存储型：恶意代码存入数据库\n- 反射型：URL 参数包含恶意代码\n- DOM 型：前端 JS 不当操作 DOM\n\n防御：\n- 输入过滤/转义\n- CSP (Content-Security-Policy)\n- HttpOnly Cookie\n- 使用框架自动转义\n\nCSRF (Cross-Site Request Forgery)：冒用用户身份发请求\n\n防御：\n- SameSite Cookie\n- CSRF Token\n- 验证 Referer/Origin\n- 关键操作二次确认",
+    codeExample: "// XSS 防御 - 转义\nfunction escapeHtml(str: string) {\n  return str\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;')\n}\n\n// CSP 设置\nContent-Security-Policy: default-src 'self'; script-src 'self' 'nonce-abc'\n\n// SameSite Cookie\nSet-Cookie: token=xxx; SameSite=Strict; HttpOnly; Secure",
+    tags: ["浏览器", "XSS", "CSRF", "安全", "CSP"],
+  },
+  {
+    id: "br-06",
+    title: "浏览器进程与线程模型",
+    category: "browser",
+    difficulty: 2,
+    question: "Chrome 浏览器的多进程架构是怎样的？",
+    answer: "主要进程：\n1. Browser 主进程：地址栏、书签、网络、协调子进程\n2. Renderer 渲染进程：每个 Tab 一个（部分合并），负责页面渲染和 JS 执行\n3. GPU 进程：3D CSS、Canvas、视频解码\n4. Network 网络进程：处理网络请求\n5. Plugin 插件进程：每个插件一个\n\n渲染进程内线程：\n- GUI 渲染线程：DOM 渲染，与 JS 引擎互斥\n- JS 引擎线程：执行 JS（V8）\n- 事件触发线程：Event Loop\n- 定时器触发线程：setTimeout/setInterval\n- 异步 HTTP 请求线程\n\n为什么多进程：\n- 隔离：一个 Tab 崩溃不影响其他\n- 安全：沙箱隔离\n- 性能：多核利用",
+    tags: ["浏览器", "进程", "线程", "Chrome", "架构"],
+  }
+]

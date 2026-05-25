@@ -1,0 +1,57 @@
+import type { KnowledgePoint } from '../types'
+
+export const liveStreamingData: KnowledgePoint[] = [
+  {
+    id: "ls-01",
+    title: "直播协议对比：RTMP / HLS / HTTP-FLV / WebRTC",
+    category: "live-streaming",
+    subCategory: "协议",
+    difficulty: 2,
+    question: "请对比 RTMP、HLS、HTTP-FLV、WebRTC 四种直播协议的特点和适用场景。",
+    answer: "| 协议 | 延迟 | 兼容性 | 适用场景 |\n|---|---|---|---|\n| RTMP | 1-3s | Flash 依赖，现代浏览器不支持 | 推流端（采集→服务端） |\n| HLS | 10-30s | 全平台原生支持 | 点播、对延迟不敏感的直播 |\n| HTTP-FLV | 1-3s | 需 flv.js 等播放器 | 低延迟直播 |\n| WebRTC | <1s | 现代浏览器 | 实时通话、连麦、超低延迟 |\n\n选择建议：\n- 普通直播：HLS（兼容性最好）\n- 低延迟直播：HTTP-FLV + flv.js\n- 实时互动：WebRTC\n- 推流端：RTMP→服务端转协议",
+    tags: ["RTMP", "HLS", "FLV", "WebRTC", "直播协议"],
+  },
+  {
+    id: "ls-02",
+    title: "flv.js / hls.js 播放器原理",
+    category: "live-streaming",
+    subCategory: "播放器",
+    difficulty: 3,
+    question: "flv.js 和 hls.js 是如何在浏览器中播放直播流的？",
+    answer: "flv.js 原理：\n\n1. 通过 fetch/stream 拉取 HTTP-FLV 流\n2. 解析 FLV 格式（header + tags）\n3. 将音视频数据 remux（重新封装）为 fMP4 (fragmented MP4)\n4. 通过 Media Source Extensions (MSE) 喂给 video 元素\n\nhls.js 原理：\n\n1. 下载 m3u8 播放列表\n2. 按顺序下载 .ts 分片\n3. 通过 MSE 将 TS 片段转封装为 fMP4\n4. 自适应码率 (ABR)：根据网络状况切换不同码率流\n\nMSE (Media Source Extensions)：\n- 核心 API，允许 JS 动态构建媒体流\n- MediaSource → SourceBuffer → appendBuffer()\n- 不直接用原生 video.src（原生不支持 FLV）",
+    codeExample: "// flv.js 基本使用\nimport flvjs from 'flv.js'\n\nif (flvjs.isSupported()) {\n  const player = flvjs.createPlayer({\n    type: 'flv',\n    url: 'https://example.com/live/stream.flv'\n  })\n  player.attachMediaElement(videoElement)\n  player.load()\n  player.play()\n}\n\n// hls.js\nimport Hls from 'hls.js'\nif (Hls.isSupported()) {\n  const hls = new Hls()\n  hls.loadSource('https://example.com/live/playlist.m3u8')\n  hls.attachMedia(videoElement)\n}",
+    tags: ["flv.js", "hls.js", "MSE", "播放器"],
+  },
+  {
+    id: "ls-03",
+    title: "WebRTC 端到端通信原理",
+    category: "live-streaming",
+    subCategory: "WebRTC",
+    difficulty: 3,
+    question: "请详细描述 WebRTC 的端到端通信建立过程（信令、ICE、SDP）。",
+    answer: "WebRTC 建立连接流程：\n\n1. 获取本地媒体：getUserMedia() 获取摄像头/麦克风\n2. 创建 PeerConnection：new RTCPeerConnection(config)\n3. 信令交换 (Signaling)：\n   - 通过信令服务器（WebSocket）交换 SDP\n   - A 创建 offer (SDP) → 发送给 B\n   - B 收到 offer，设置远程描述，创建 answer (SDP) → 发送给 A\n4. ICE 候选收集与交换：\n   - 收集本地网络地址（host, srflx, relay）\n   - 通过信令服务器交换 ICE candidates\n   - ICE 协议自动选择最优路径\n5. 连接建立：DTLS 握手（加密）+ SRTP 传输媒体数据\n\nSTUN/TURN：\n- STUN：获取公网 IP（NAT 穿透）\n- TURN：中继服务器（无法直连时的最后一招）\n- ICE：综合 STUN + TURN 的最优路径算法",
+    codeExample: "// WebRTC 基本流程\nconst pc = new RTCPeerConnection({\n  iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]\n})\n\nconst stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })\nstream.getTracks().forEach(track => pc.addTrack(track, stream))\n\nconst offer = await pc.createOffer()\nawait pc.setLocalDescription(offer)\nsignaling.send({ type: 'offer', sdp: offer })\n\npc.onicecandidate = (event) => {\n  if (event.candidate) {\n    signaling.send({ type: 'candidate', candidate: event.candidate })\n  }\n}",
+    tags: ["WebRTC", "SDP", "ICE", "STUN", "信令"],
+  },
+  {
+    id: "ls-04",
+    title: "实时弹幕系统架构与渲染优化",
+    category: "live-streaming",
+    subCategory: "弹幕",
+    difficulty: 2,
+    question: "直播弹幕系统的前端架构如何设计？大量弹幕如何优化渲染？",
+    answer: "弹幕系统架构：\n\n1. 接入层：WebSocket 接收弹幕消息\n2. 消息队列：本地缓冲，控制展示速率\n3. 渲染引擎：\n   - Canvas 渲染（比 DOM 高效）\n   - 轨道分配算法（避免弹幕重叠）\n   - 碰撞检测（弹幕之间、弹幕与礼物特效）\n\n渲染优化：\n\n1. Canvas 渲染：\n   - 单 Canvas 绘制所有弹幕\n   - requestAnimationFrame 循环\n   - 弹幕移出屏幕后回收复用\n\n2. 轨道管理：\n   - 将屏幕分为多条水平轨道\n   - 每条轨道记录最后一条弹幕的位置\n   - 新弹幕分配到最早空闲的轨道\n\n3. 速率控制：\n   - 限制同时展示数量（如 30 条）\n   - 超出部分丢弃或降级为列表模式",
+    codeExample: "// Canvas 弹幕渲染\nclass BarrageEngine {\n  private tracks: number[] = []\n\n  constructor(private canvas: HTMLCanvasElement, private trackCount = 12) {\n    this.tracks = new Array(trackCount).fill(canvas.width)\n  }\n\n  addDanmaku(text: string) {\n    const track = this.tracks.findIndex(x => x <= this.canvas.width - 200)\n    if (track === -1) return\n    this.danmakuList.push({ text, x: this.canvas.width, y: track * 40 })\n  }\n\n  render(ctx: CanvasRenderingContext2D) {\n    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)\n    for (const dm of this.danmakuList) {\n      ctx.fillText(dm.text, dm.x, dm.y)\n      dm.x -= 2\n    }\n  }\n}",
+    tags: ["弹幕", "Canvas", "WebSocket", "渲染优化"],
+  },
+  {
+    id: "ls-05",
+    title: "直播首屏秒开优化",
+    category: "live-streaming",
+    subCategory: "优化",
+    difficulty: 3,
+    question: "直播首屏秒开有哪些优化手段？",
+    answer: "首屏秒开 = 从点击到画面显示 < 1s\n\n策略：\n\n1. 服务端：\n   - GOP 缓存：服务器缓存最近一个 GOP（关键帧组）\n   - 首帧为 IDR 关键帧（可立即解码）\n   - 推流端 GOP 间隔设小（1-2s）\n\n2. CDN：\n   - 边缘节点预热\n   - 低延迟 CDN（如 HTTP-FLV 比 HLS 首屏快）\n\n3. 播放器：\n   - 预加载播放器 SDK（preload）\n   - 首帧快速解码 + 展示\n   - 延迟追帧：以快放方式追到最新画面\n\n4. 客户端：\n   - DNS 预解析\n   - 播放器实例预创建\n   - 封面图秒出（视觉上首屏）\n\n关键指标：首帧时间、卡顿率、追帧策略。",
+    tags: ["直播", "首屏秒开", "GOP", "延迟优化"],
+  }
+]
