@@ -10,8 +10,14 @@ const route = useRoute()
 
 const categories = computed(() => getCategoriesWithCount())
 
-watch(() => route.path, () => {
-  sidebarOpen.value = false
+// Auto-open sidebar when navigating to a category page
+watch(() => route.params.id, (catId) => {
+  if (catId) sidebarOpen.value = true
+})
+
+watch(() => route.path, (path) => {
+  // Close sidebar when going to home
+  if (path === '/') sidebarOpen.value = false
 })
 
 function toggleSidebar() {

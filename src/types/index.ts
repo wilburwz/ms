@@ -53,5 +53,4 @@ export const CATEGORIES: CategoryItem[] = [
   { id: 'browser', name: '浏览器原理', icon: '🧠', count: 0 },
   { id: 'integration', name: '三方集成', icon: '🔌', count: 0 },
   { id: 'soft-skills', name: '通用软技能', icon: '💡', count: 0 },
-  { id: 'interview-bible', name: '面试宝典', icon: '📖', count: 0 }
 ]

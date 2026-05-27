@@ -269,7 +269,19 @@ const { data } = await fetchAPI<UserResponse>('/api/user')
     tags: ['TypeScript', '高级类型', 'infer', '条件类型', '类型安全'],
   },
 
-  // ══════════════ AI 前端集成 (13-15) ══════════════
+  // ══════════════ AI 前端集成 (29, 13-15, 26-28) ══════════════
+  // AI 项目介绍 (29)
+  {
+    id: 'res-29',
+    title: 'AI项目介绍：多媒体互动平台全览',
+    category: 'resume',
+    subCategory: 'AI 前端集成',
+    difficulty: 2,
+    question: '请详细介绍你在简历中提到的 AI 视频直播/多媒体互动平台项目。涵盖：项目概述、核心功能、AI 能力集成细节、面向用户、前端技术栈全景。',
+    answer: 'AI 视频直播 / 多媒体互动平台 — 项目全览\n\n--- 一、项目概述 ---\n我负责前端架构与核心开发的 AI 多媒体平台，面向内容创作者和媒体团队的 SaaS 产品。整合 AI 视觉识别、语音转写、智能标签和自然语言搜索，管理海量非结构化媒体资产。\n\n--- 二、核心功能 ---\n1. 媒体资产管理：大文件分片上传（Resumable.js）+ 进度可视化 + 断点续传。支持图片、视频、音频预览、分类、标签和全文搜索。\n2. AI OCR 文字识别：集成 PaddleOCR，前端实现交互式标注——用户可在图片上框选修正 AI 识别结果，支持拖拽选区、编辑文本、置信度可视化（低置信度标红）。\n3. Whisper 语音转字幕：上传视频/音频自动生成多语言字幕。前端实现逐句同步高亮、Canvas 时间轴编辑器（拖拽调整时间点）、字幕文本编辑（合并拆分、双语字幕）。\n4. 智能标签与搜索：OpenAI/视觉模型自动打标签（物体、场景、人物、情绪）。前端展示标签云、自然语言搜索（"找一张有猫的图片"→ 向量搜索 → 结果展示）。\n5. 会员与权限：多租户架构，RBAC 权限控制（路由级+组件级），操作日志审计。\n\n--- 三、AI 能力集成 ---\n- Prompt Engineering：多层 Prompt 体系——基础 Prompt（角色+格式）→ 任务 Prompt（具体指令）→ 上下文 Prompt（用户当前媒体信息）。Zustand 管理 Prompt 模板库。\n- 流式处理：自然语言搜索和 AI 标签生成用 SSE 流式返回，textBuffer + rAF 批量渲染。\n- WebSocket：直播字幕、多人协作标注通过 Socket.io 实现，断线重连和离线消息队列。\n- Web Worker：OCR 图片裁剪、Canvas 坐标计算在 Worker 中执行，避免阻塞主线程。\n\n--- 四、面向用户 ---\n内容创作者（YouTuber/短视频博主）用于字幕生成和素材管理；媒体制作团队用于海量素材 AI 标注和检索；在线教育平台用于课程视频字幕和知识点标签化。\n\n--- 五、前端技术栈全景 ---\n框架：React 18 + TypeScript + Next.js 14（App Router）\n状态管理：Zustand（全局）+ TanStack Query（服务端）\n样式：Tailwind CSS + CSS Variables 主题系统\n构建：Vite + pnpm Monorepo\n核心能力：Canvas API（时间轴）、WebSocket/Socket.io、SSE 流式、Web Worker、IndexedDB\n测试：Vitest + Playwright\n工程化：ESLint + Prettier + Husky + GitHub Actions CI/CD + Sentry + Web Vitals\nAI 工具：Codex/Claude Code 辅助需求拆解、组件生成、测试用例编写',
+    tags: ['AI项目', '多媒体平台', 'OCR', 'Whisper', '流式处理', 'Canvas', 'WebSocket', '前端架构'],
+  },
+
   {
     id: 'res-13',
     title: 'AI Chat 前端架构设计',
@@ -564,16 +576,4 @@ test('抽奖按钮点击后禁用并显示结果', async () => {
     answer: '深度版：AI 辅助前端开发全流程（含面试官 7 道追问）\n\n--- 一、五阶段 ---\n需求拆解 ★★★：AI 拆 PRD，人工确认优先级\n代码生成 ★★★★：AI 脚手架/样式/测试，人工交互/动画/安全\nDiff Review ★★：AI 检测命名/类型，人工架构+业务。硬规则：逐 Diff 人工审查\n测试生成 ★★★★：AI 用例+Mock，人工 E2E 路径\n文档生成 ★★★★：AI README/文档，人工 ADR/选型\n\n--- 二、追问 7 题 ---\n1. .cursorrules：技术栈+目录+规范+示例+命令+禁止\n2. 防幻觉：类型文件+锁版本+先读文档+分层生成+TS+ESLint\n3. 效率：CRUD 60%、组件库 75%、测试 80%，整体 30-50%\n4. 安全：审查 innerHTML/eval，CI security plugin，高危不交 AI\n5. 大项目：分治+接口契约+Codex 上下文+ARCHITECTURE.md\n6. 禁用：安全敏感、性能关键、原创交互、复杂调试、法务合规\n7. 推广：不强制、分享案例、降低门槛、强调 Review、PR 标注\n\n--- 深度补充：AI 开发追问 ---\n效率量化：用 WakaTime 记录编码时间对比同类任务 3 个月 50+ PR。AI 安全实例：生成的 fetch 缺 Authorization Header。ARCHITECTURE.md 模板：概述+技术栈+目录树+数据流图+模块说明+部署拓扑（2-3 页）。',
     tags: ['AI辅助开发', 'Codex', 'Claude Code', 'Code Review', 'cursorrules'],
   },
-  // AI 项目介绍 (29)
-  {
-    id: 'res-29',
-    title: 'AI项目介绍：多媒体互动平台全览',
-    category: 'resume',
-    subCategory: 'AI 前端集成',
-    difficulty: 2,
-    question: '请详细介绍你在简历中提到的 AI 视频直播/多媒体互动平台项目。涵盖：项目概述、核心功能、AI 能力集成细节、面向用户、前端技术栈全景。',
-    answer: 'AI 视频直播 / 多媒体互动平台 — 项目全览\n\n--- 一、项目概述 ---\n我负责前端架构与核心开发的 AI 多媒体平台，面向内容创作者和媒体团队的 SaaS 产品。整合 AI 视觉识别、语音转写、智能标签和自然语言搜索，管理海量非结构化媒体资产。\n\n--- 二、核心功能 ---\n1. 媒体资产管理：大文件分片上传（Resumable.js）+ 进度可视化 + 断点续传。支持图片、视频、音频预览、分类、标签和全文搜索。\n2. AI OCR 文字识别：集成 PaddleOCR，前端实现交互式标注——用户可在图片上框选修正 AI 识别结果，支持拖拽选区、编辑文本、置信度可视化（低置信度标红）。\n3. Whisper 语音转字幕：上传视频/音频自动生成多语言字幕。前端实现逐句同步高亮、Canvas 时间轴编辑器（拖拽调整时间点）、字幕文本编辑（合并拆分、双语字幕）。\n4. 智能标签与搜索：OpenAI/视觉模型自动打标签（物体、场景、人物、情绪）。前端展示标签云、自然语言搜索（"找一张有猫的图片"→ 向量搜索 → 结果展示）。\n5. 会员与权限：多租户架构，RBAC 权限控制（路由级+组件级），操作日志审计。\n\n--- 三、AI 能力集成 ---\n- Prompt Engineering：多层 Prompt 体系——基础 Prompt（角色+格式）→ 任务 Prompt（具体指令）→ 上下文 Prompt（用户当前媒体信息）。Zustand 管理 Prompt 模板库。\n- 流式处理：自然语言搜索和 AI 标签生成用 SSE 流式返回，textBuffer + rAF 批量渲染。\n- WebSocket：直播字幕、多人协作标注通过 Socket.io 实现，断线重连和离线消息队列。\n- Web Worker：OCR 图片裁剪、Canvas 坐标计算在 Worker 中执行，避免阻塞主线程。\n\n--- 四、面向用户 ---\n内容创作者（YouTuber/短视频博主）用于字幕生成和素材管理；媒体制作团队用于海量素材 AI 标注和检索；在线教育平台用于课程视频字幕和知识点标签化。\n\n--- 五、前端技术栈全景 ---\n框架：React 18 + TypeScript + Next.js 14（App Router）\n状态管理：Zustand（全局）+ TanStack Query（服务端）\n样式：Tailwind CSS + CSS Variables 主题系统\n构建：Vite + pnpm Monorepo\n核心能力：Canvas API（时间轴）、WebSocket/Socket.io、SSE 流式、Web Worker、IndexedDB\n测试：Vitest + Playwright\n工程化：ESLint + Prettier + Husky + GitHub Actions CI/CD + Sentry + Web Vitals\nAI 工具：Codex/Claude Code 辅助需求拆解、组件生成、测试用例编写',
-    tags: ['AI项目', '多媒体平台', 'OCR', 'Whisper', '流式处理', 'Canvas', 'WebSocket', '前端架构'],
-  }
-
 ]
