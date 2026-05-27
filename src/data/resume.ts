@@ -532,4 +532,36 @@ test('抽奖按钮点击后禁用并显示结果', async () => {
 })`,
     tags: ['测试', 'Vitest', 'Playwright', 'Testing Library', '测试策略'],
   },
+
+  // AI 前端集成 深度版 (26-28)
+  {
+    id: 'res-26',
+    title: '深度 AI Chat 前端架构（10 道追问版）',
+    category: 'resume',
+    subCategory: 'AI 前端集成',
+    difficulty: 3,
+    question: '设计通用 AI Chat 前端框架，含流式渲染、会话管理、上下文窗口、插件系统。面试官 10 道追问预判。',
+    answer: '深度版：通用 AI Chat 前端架构（含面试官 10 道追问）\n\n--- 一、流式响应渲染 ---\n后端 ReadableStream + fetch getReader 逐 chunk 读取 SSE。textBuffer 累积 + rAF 16ms 批量更新 UI。\nAbortController 中止。断线重连指数退避 1s-2s-4s-max 15s。\n\n追问 1 SSE vs WebSocket？SSE 更适合 LLM 流式：天然单向、HTTP 无需心跳、自动重连。WebSocket 适合双向频繁交互。\n追问 2 避免 UI 闪烁？rAF 批量更新 + 虚拟化长消息 + 代码块延迟高亮（闭合前 pre，闭合后一次性高亮）。\n追问 3 思考过程？识别 reasoning_content 字段，折叠面板展示（默认折叠），不计入 token 估算。\n追问 4 Token 计数？js-tiktoken 3.5MB，动态 import 懒加载。轻量 fallback：中文 1 字约 1.5 tokens。后端返回 usage 前端缓存。\n追问 5 流断了？中断标记 + 继续生成按钮 + 超时 15 秒重连。\n\n--- 二、会话管理 ---\nZustand store + IndexedDB（Dexie.js）缓存 50 会话。BroadcastChannel 多 Tab 同步。\n\n--- 三、上下文窗口 ---\nsystem prompt > 最新 N 轮 > 摘要压缩 > 智能截断。推荐后端截断，前端用量指示器。\n\n--- 四、插件系统 ---\ndefinePlugin 注册。Function Calling 卡片 UI（pending/success/error）。确认模式。iframe/Worker 隔离。\n追问 9 工具失败：区分可重试/不可重试，可重试提供按钮。\n追问 10 流式 tool_calls：累积 index 拼接 JSON，try JSON.parse 判断完整，不完整显示 skeleton。',
+    tags: ['AI Chat', 'SSE', '流式渲染', '架构设计', 'Function Calling'],
+  },
+  {
+    id: 'res-27',
+    title: '深度 Whisper 字幕系统（8 道追问版）',
+    category: 'resume',
+    subCategory: 'AI 前端集成',
+    difficulty: 3,
+    question: 'Whisper 字幕实时渲染与时间轴同步，含数据模型、编辑器、实时字幕。面试官 8 道追问预判。',
+    answer: '深度版：完整字幕系统前端方案（含面试官 8 道追问）\n\n--- 一、数据模型 ---\nSubtitle { id, start(毫秒), end, text, speaker?, confidence? }，Whisper 按语句切分。全量 <200KB JSON。直播 WebSocket 增量。\n\n追问 1 word vs sentence-level？逐词高亮（<10 词）+ 逐句（大多数）。confidence <0.6 浅红。\n追问 2 Diarization？hash 映射色板 + 编辑器可重命名 + Canvas 不同色块。\n\n--- 二、时间轴同步 ---\n二分 O(log n) + rAF 节流 + 预渲染 ±3 DOM + opacity 过渡。Seek 立即更新。暂停持续显示。\n\n--- 三、编辑器 ---\nCanvas 时间轴 + 拖拽吸附 + 双击编辑 + 合并拆分 + Command Pattern 撤销。\nCanvas 性能：虚拟化 + 分层 + 缩略图 + rAF。导出 SRT/VTT/ASS 纯前端。双语：原文+译文双行。\n\n--- 四、实时字幕 ---\n2-5 秒延迟标注 + 3-5 秒 buffer + 句子修正（id 匹配覆盖）。低延迟模式：tiny/base + faster-whisper。',
+    tags: ['Whisper', '字幕', '时间轴', 'Canvas', '双语字幕', '实时转写'],
+  },
+  {
+    id: 'res-28',
+    title: '深度 AI 辅助开发流程（7 道追问版）',
+    category: 'resume',
+    subCategory: 'AI 前端集成',
+    difficulty: 2,
+    question: 'AI 辅助前端开发完整流程：需求拆解、代码生成、Diff Review、测试、文档。面试官 7 道追问预判。',
+    answer: '深度版：AI 辅助前端开发全流程（含面试官 7 道追问）\n\n--- 一、五阶段 ---\n需求拆解 ★★★：AI 拆 PRD，人工确认优先级\n代码生成 ★★★★：AI 脚手架/样式/测试，人工交互/动画/安全\nDiff Review ★★：AI 检测命名/类型，人工架构+业务。硬规则：逐 Diff 人工审查\n测试生成 ★★★★：AI 用例+Mock，人工 E2E 路径\n文档生成 ★★★★：AI README/文档，人工 ADR/选型\n\n--- 二、追问 7 题 ---\n1. .cursorrules：技术栈+目录+规范+示例+命令+禁止\n2. 防幻觉：类型文件+锁版本+先读文档+分层生成+TS+ESLint\n3. 效率：CRUD 60%、组件库 75%、测试 80%，整体 30-50%\n4. 安全：审查 innerHTML/eval，CI security plugin，高危不交 AI\n5. 大项目：分治+接口契约+Codex 上下文+ARCHITECTURE.md\n6. 禁用：安全敏感、性能关键、原创交互、复杂调试、法务合规\n7. 推广：不强制、分享案例、降低门槛、强调 Review、PR 标注',
+    tags: ['AI辅助开发', 'Codex', 'Claude Code', 'Code Review', 'cursorrules'],
+  },
 ]
