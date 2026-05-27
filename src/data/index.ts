@@ -21,7 +21,6 @@ import { mobileData } from './mobile'
 import { browserData } from './browser'
 import { integrationData } from './integration'
 import { softSkillsData } from './soft-skills'
-import { interviewBibleData } from './interview-bible'
 import { resumeData } from './resume'
 
 const allData: KnowledgePoint[] = [
@@ -46,7 +45,6 @@ const allData: KnowledgePoint[] = [
   ...browserData,
   ...integrationData,
   ...softSkillsData,
-  ...interviewBibleData,
   ...resumeData
 ]
 

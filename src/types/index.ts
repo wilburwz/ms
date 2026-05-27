@@ -31,6 +31,7 @@ export const DIFFICULTY_MAP: Record<number, string> = {
 }
 
 export const CATEGORIES: CategoryItem[] = [
+  { id: 'resume', name: '简历深度面试', icon: '📋', count: 0 },
   { id: 'html-css', name: 'HTML5 / CSS3', icon: '🎨', count: 0 },
   { id: 'javascript', name: 'JavaScript 核心', icon: '📜', count: 0 },
   { id: 'typescript', name: 'TypeScript', icon: '🔷', count: 0 },
@@ -52,6 +53,5 @@ export const CATEGORIES: CategoryItem[] = [
   { id: 'browser', name: '浏览器原理', icon: '🧠', count: 0 },
   { id: 'integration', name: '三方集成', icon: '🔌', count: 0 },
   { id: 'soft-skills', name: '通用软技能', icon: '💡', count: 0 },
-  { id: 'interview-bible', name: '面试宝典', icon: '📖', count: 0 },
-  { id: 'resume', name: '简历深度面试', icon: '📋', count: 0 }
+  { id: 'interview-bible', name: '面试宝典', icon: '📖', count: 0 }
 ]
