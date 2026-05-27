@@ -7,7 +7,7 @@ export const visualizationData: KnowledgePoint[] = [
     category: "visualization",
     difficulty: 2,
     question: "你如何对 ECharts 进行二次封装？有哪些关键设计点？",
-    answer: "封装目标：统一配置、简化使用、减少重复代码。\n\n设计要点：\n1. 默认主题：统一颜色、字体、间距等视觉规范\n2. 数据中间转换层 (Adapter)：将业务数据转为 ECharts option 格式\n3. 响应式容器：监听 resize 自动重绘\n4. 通用交互：tooltip 格式化、legend 切换、缩放等统一处理\n5. 按需加载：通过 ECharts 的按需引入减少包体积\n6. 组件 Props 设计：数据、配置、事件回调\n\n注意事项：\n- 实例管理（用 ref 或 Map 存储）\n- 避免频繁 setOption（notMerge）\n- 大数据量用 dataset + 增量渲染",
+    answer: 'ECharts 是百度开源的可视化库，是我用最多的——文档全、中文支持好、图表类型多。AntV 是蚂蚁金服的方案——G2 偏向统计图表、G6 做关系图、L7 做地图可视化。D3.js 更底层——给你操作 SVG/Canvas 的能力但图表要自己搭，灵活度最高但学习成本也最高。实际选型：业务报表用 ECharts（开箱即用），复杂定制和交互用 D3，地图和关系图用 AntV。',
     codeExample: "// BaseChart 封装\nimport * as echarts from 'echarts/core'\nimport { CanvasRenderer } from 'echarts/renderers'\necharts.use([CanvasRenderer])\n\n// 数据适配器\ntype RawData = { date: string; value: number; category: string }\nfunction toLineOption(data: RawData[]): echarts.EChartsOption {\n  return {\n    xAxis: { type: 'category', data: data.map(d => d.date) },\n    yAxis: { type: 'value' },\n    series: [{ data: data.map(d => d.value), type: 'line' }]\n  }\n}",
     tags: ["ECharts", "封装", "数据可视化"],
   },
@@ -17,7 +17,7 @@ export const visualizationData: KnowledgePoint[] = [
     category: "visualization",
     difficulty: 2,
     question: "Canvas 和 SVG 各有什么特点？分别在什么场景下使用？",
-    answer: "| | Canvas | SVG |\n|---|---|---|\n| 渲染方式 | 像素（位图） | 矢量 |\n| 元素 | 单个画布元素 | 多个 DOM 元素 |\n| 事件 | 需手动计算坐标 | 原生 DOM 事件 |\n| 性能 | 大量对象时优 | 少量对象时优 |\n| 缩放 | 会失真 | 不失真 |\n| 内存 | 绘制完不占内存 | DOM 树常驻内存 |\n\n选择原则：\n- 大数据量、实时渲染、像素操作 → Canvas\n- 交互多、元素少、需缩放 → SVG\n- 3D → WebGL / Three.js\n- ECharts 内部会根据场景自动切换 Canvas/SVG 渲染器",
+    answer: '大屏数据可视化的技术要点：固定宽高比（设计稿 1920×1080，用 transform: scale 等比缩放适配各种屏幕分辨率）。性能优化——数据量大的图表要降低渲染频率（requestAnimationFrame 控制帧率）、降低数据精度（不必要的小数点去掉减少渲染开销）、使用 WebGL 渲染（ECharts GL 模式）提升大量数据场景的性能。大屏一般接 WebSocket 实时推送数据，不是轮询。',
     tags: ["Canvas", "SVG", "可视化"],
   },
   {
@@ -26,7 +26,7 @@ export const visualizationData: KnowledgePoint[] = [
     category: "visualization",
     difficulty: 3,
     question: "当图表数据量很大（如 10万+ 条数据）时，如何优化渲染性能？",
-    answer: "优化策略：\n\n1. 数据抽样 (Sampling)：LTTB 算法降采样，保持趋势\n2. 增量渲染 / 分片加载：Web Worker 处理数据\n3. Canvas 渲染器：比 SVG 更适合大量元素\n4. 虚拟列表思想：只渲染可视区域的元素\n5. WebGL 加速：ECharts GL / deck.gl\n6. 聚合/预计算：在后端预先聚合成合理的数据量\n7. lod 切换：缩放级别不同使用不同精度\n8. requestAnimationFrame 节流：控制渲染帧率\n\nECharts 具体手段：\n- dataset + dataZoom\n- seriesLayoutBy\n- progressive 渐进式渲染",
+    answer: '图表性能优化在数据量大时特别重要。ECharts 的 dataZoom 做数据窗口——全量数据在内存里，但只渲染可视区域的数据点。大数据量用 Canvas 渲染而非 SVG（Canvas 对大量元素更高效）。WebGL 渲染（ECharts GL）适合超大数据集的散点图和 3D 图表。数据采样——如果数据精度远高于屏幕像素精度，采样不会损失任何视觉效果。',
     tags: ["可视化", "性能优化", "大数据", "LTTB"],
   }
 ]

@@ -7,7 +7,7 @@ export const mobileData: KnowledgePoint[] = [
     category: "mobile",
     difficulty: 2,
     question: "前端移动端适配有哪些方案？各自的优缺点？",
-    answer: "1. Rem 适配：\n   - 设置根元素 font-size = 屏幕宽度 / 设计稿宽度 * 100\n   - 元素用 rem 单位\n   - 需要 JS 动态计算\n\n2. VW 适配（推荐）：\n   - 1vw = 屏幕宽度 1%\n   - postcss-px-to-viewport 自动转换\n   - 纯 CSS 方案，无需 JS\n\n3. vw + rem 组合：\n   - 根元素 font-size 用 vw\n   - 元素用 rem\n\n4. 响应式媒体查询：\n   - @media 断点适配\n\n5. 弹性盒 + 百分比：\n   - Flex/Grid + % 混合布局\n\n特殊处理：\n- 1px 边框：transform: scaleY(0.5)\n- 安全区域：env(safe-area-inset-*)\n- viewport meta 设置",
+    answer: '移动端适配的核心是 viewport + rem/vw + 媒体查询。viewport meta 标签是第一步——width=device-width, initial-scale=1，让页面按设备宽度渲染。淘宝的 flexible 方案用 rem 配合根字体大小缩放。现在更推荐 vw/vh 方案——直接用视口百分比，配合 clamp() 做最小/最大限制。媒体查询处理不同断点的布局差异。',
     codeExample: "/* VW 方案 */\n/* postcss-px-to-viewport 配置 */\n/* viewportWidth: 375, unitPrecision: 5 */\n\n/* 设计稿 375px，元素 100px → 自动转为 vw */\n.btn {\n  width: 100px;  /* 编译后: 26.66667vw */\n}\n\n/* 1px 边框 */\n.border-1px {\n  position: relative;\n}\n.border-1px::after {\n  content: '';\n  position: absolute;\n  border: 1px solid #ddd;\n  transform: scaleY(0.5);\n}",
     tags: ["移动端", "适配", "rem", "vw", "1px"],
   },
@@ -17,7 +17,7 @@ export const mobileData: KnowledgePoint[] = [
     category: "mobile",
     difficulty: 2,
     question: "React Native、Flutter 和小程序各自的优缺点？",
-    answer: "React Native：\n- JS/TS 开发，React 语法\n- 原生组件渲染\n- 热更新\n- 性能不如原生\n- 生态成熟\n\nFlutter：\n- Dart 语言\n- 自绘引擎，性能接近原生\n- 一套代码多端运行\n- 体积较大\n- 学习曲线\n\n小程序：\n- 微信生态，无需安装\n- WXML/WXSS/JS\n- 性能受限（WebView + 原生组件）\n- 获客成本低\n\n跨端框架：\n- Taro：React 语法，多端适配\n- Uni-app：Vue 语法，多端适配\n\n选择：\n- 纯移动端追求性能 → Flutter\n- Web 团队 → RN\n- 国内市场 → 小程序 + Taro/Uni-app",
+    answer: '1px 边框问题：设计师想要的 1px 在 Retina 屏上显示 2-3 个物理像素，看起来像 2px。解决方案：transform: scale(0.5) 把边框缩小一半、用 box-shadow 模拟细线、用伪元素 + transform 画边框然后缩放到 0.5。移动端还有个 300ms 点击延迟问题——浏览器等 300ms 判断是否双击缩放。用 viewport meta 加 user-scalable=no 或 fastclick 库解决。现代移动端浏览器已逐步修复。',
     tags: ["移动端", "React Native", "Flutter", "小程序", "跨端"],
   },
   {
@@ -26,7 +26,7 @@ export const mobileData: KnowledgePoint[] = [
     category: "mobile",
     difficulty: 2,
     question: "移动端特有的性能问题和常见坑有哪些？",
-    answer: "常见问题：\n1. 300ms 点击延迟：touch-action: manipulation\n2. iOS 橡皮筋效果：overscroll-behavior: none\n3. 软键盘遮挡：visualViewport API\n4. 滚动卡顿：-webkit-overflow-scrolling: touch\n5. 点击穿透：touchend → click 延迟\n6. 高清屏 1px 边框问题\n7. 固定定位在软键盘弹出时失效\n\n性能优化：\n- 被动事件监听：{ passive: true }\n- 减少重排重绘\n- 图片懒加载 + WebP\n- 虚拟列表\n- 骨架屏\n- 预加载关键资源\n\n安全区域：\n- env(safe-area-inset-top)\n- viewport-fit=cover",
+    answer: '移动端手势操作：touchstart/touchmove/touchend 三个事件。判断滑动方向——对比起始和结束的坐标差，水平差 > 垂直差就是横滑，反之竖滑。判断滑动距离决定是否触发操作。双指缩放用 e.touches 两个点的距离变化。实际开发中用 Hammer.js 或 @use-gesture 库——它们处理了复杂的多点触摸和手势识别。',
     tags: ["移动端", "性能", "兼容性", "iOS"],
   },
   {
@@ -35,7 +35,7 @@ export const mobileData: KnowledgePoint[] = [
     category: "mobile",
     difficulty: 2,
     question: "Hybrid App 的架构？JSBridge 的通信原理？",
-    answer: "Hybrid App 架构：\n- Native Shell + WebView 容器\n- Web 页面运行在 WebView 中\n- Native 提供能力（相机、定位、支付等）\n\nJSBridge 通信原理：\n\nJS → Native：\n1. URL Scheme 拦截（旧方案）\n2. prompt/console.log 拦截\n3. WebView.addJavascriptInterface (Android)\n4. WKWebView.messageHandlers (iOS)\n\nNative → JS：\n1. evaluateJavascript\n2. loadUrl(\"javascript:...\")\n\n通信协议：\n{ handlerName: 'getUserInfo', data: {}, callbackId: 'cb_1' }\n\n常见框架：\n- DSBridge\n- JsBridge\n- WebViewJavascriptBridge",
+    answer: '移动端 JSBridge 是 H5 和原生 App 通信的桥梁。原理：原生注入一个全局对象（window.JSBridge），H5 调 JSBridge.call(method, params, callback)，原生收到后执行对应方法并回调。反过来原生也可以调 H5 的函数。常见用途：获取设备信息、调用原生相机/相册、打开原生页面、分享到社交平台。微信 JS-SDK 也是类似原理。',
     tags: ["Hybrid", "JSBridge", "WebView", "跨端"],
   }
 ]

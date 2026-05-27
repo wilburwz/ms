@@ -7,7 +7,7 @@ export const networkData: KnowledgePoint[] = [
     category: "network",
     difficulty: 2,
     question: "HTTP 各版本的区别和改进是什么？",
-    answer: "HTTP/1.1：\n- 持久连接 (Keep-Alive)\n- 管道化（但队头阻塞）\n- 每个 TCP 连接同时只处理一个请求\n\nHTTP/2：\n- 多路复用：一个 TCP 连接并行多个请求/响应\n- 头部压缩 (HPACK)\n- 服务端推送\n- 二进制分帧\n- 仍然有 TCP 层的队头阻塞\n\nHTTP/3 (QUIC)：\n- 基于 UDP 的 QUIC 协议\n- 彻底解决队头阻塞\n- 0-RTT 连接建立\n- 连接迁移（切换网络不断开）\n- 内置 TLS 1.3",
+    answer: 'HTTP 1.1 最大的问题是队头阻塞——同一个 TCP 连接上一个请求没完成后面的都要等。HTTP/2 用多路复用解决：一个连接上同时发送多个请求和响应，每个数据流有独立 ID，互不阻塞。还加了头部压缩（HPACK）和服务端推送。HTTP/3 更进一步——把底层 TCP 换成了 QUIC（基于 UDP），彻底解决了 TCP 层面的队头阻塞，连接建立也更快（0-RTT）。',
     tags: ["HTTP", "HTTP2", "HTTP3", "QUIC", "网络"],
   },
   {
@@ -16,7 +16,7 @@ export const networkData: KnowledgePoint[] = [
     category: "network",
     difficulty: 2,
     question: "HTTPS 的工作原理？TLS 握手过程是怎样的？",
-    answer: "HTTPS = HTTP + TLS/SSL，加密通信。\n\nTLS 1.2 握手（4-RTT）：\n1. Client Hello：支持的加密套件 + 随机数\n2. Server Hello：选定加密套件 + 证书 + 随机数\n3. 客户端验证证书，生成预主密钥\n4. 双方计算会话密钥\n\nTLS 1.3 优化（1-RTT）：\n- 精简加密套件\n- Key Share 提前发送\n- 0-RTT 恢复（有重放攻击风险）\n\n证书验证链：\n- 根 CA → 中间 CA → 服务器证书\n- 浏览器内置根 CA 公钥\n\n为什么 HTTPS 安全：\n- 非对称加密交换密钥\n- 对称加密传输数据\n- 证书验证身份",
+    answer: 'HTTPS = HTTP + TLS。TLS 握手过程：客户端发 ClientHello（支持的加密套件）、服务端回 ServerHello + 证书（含公钥）、客户端验证证书后生成对称密钥并用服务端公钥加密发给服务端。之后所有数据用对称密钥加密。证书由 CA（证书颁发机构）签发，浏览器预置了受信任的根证书。HTTP 升级 HTTPS 的关键配置：强制跳转（301 重定向）、HSTS 头、证书自动续期（Let\'s Encrypt + certbot）。',
     tags: ["HTTPS", "TLS", "SSL", "加密", "证书"],
   },
   {
@@ -25,7 +25,7 @@ export const networkData: KnowledgePoint[] = [
     category: "network",
     difficulty: 2,
     question: "TCP 为什么是三次握手？为什么断开需要四次挥手？",
-    answer: "三次握手：\n1. Client → SYN\n2. Server → SYN + ACK\n3. Client → ACK\n\n为什么三次：\n- 防止已失效的连接请求到达服务器（历史连接问题）\n- 确认双方收发能力\n- 两次不够：服务端无法确认客户端收到\n\n四次挥手：\n1. Client → FIN（我要断开）\n2. Server → ACK（收到，等我处理完）\n3. Server → FIN（我处理完了，可以断开）\n4. Client → ACK（确认断开）\n\n为什么四次：\n- TCP 全双工，每个方向需单独关闭\n- 服务端收到 FIN 后可能还有数据未发完\n\nTIME_WAIT：\n- 主动关闭方等待 2MSL\n- 确保最后的 ACK 到达\n- 等待网络中残留报文消失",
+    answer: 'TCP 三次握手：客户端发 SYN，服务端回 SYN-ACK，客户端再发 ACK——连接建立。四次挥手：客户端发 FIN，服务端回 ACK，服务端再发 FIN，客户端回 ACK——连接关闭。为什么握手三次挥手四次？因为 TCP 是全双工的——两端都可以独立发送和接收，关闭时需要双方各发 FIN+ACK 各一次，合并不了。',
     tags: ["TCP", "三次握手", "四次挥手", "网络"],
   },
   {
@@ -34,7 +34,7 @@ export const networkData: KnowledgePoint[] = [
     category: "network",
     difficulty: 2,
     question: "WebSocket 的原理和优势？与 HTTP 长轮询对比？",
-    answer: "WebSocket：全双工、持久化通信协议。\n\n建立过程：\n1. 客户端发送 HTTP Upgrade 请求\n2. 服务器返回 101 Switching Protocols\n3. 升级为 WebSocket 协议\n4. 双方可自由收发消息\n\n优势：\n- 全双工通信，服务端可主动推送\n- 低延迟：无需重复建连\n- 低开销：头部仅 2-10 字节\n- 支持二进制和文本\n\nvs HTTP 长轮询：\n- 长轮询：服务端 hold 住请求直到有数据\n- 延迟高、开销大、服务端压力大\n\nvs SSE (Server-Sent Events)：\n- SSE 单向（服务端→客户端）\n- SSE 基于 HTTP，自动重连\n- SSE 只支持文本\n\n应用：聊天室、协作编辑、实时数据、游戏",
+    answer: 'DNS 查询过程：浏览器缓存 → OS 缓存 → 本地 DNS 服务器 → 根域名服务器（返回顶级域服务器地址）→ 顶级域服务器（返回权威 DNS 服务器地址）→ 权威 DNS 服务器（返回最终 IP）。DNS 优化：DNS Prefetch（link rel="dns-prefetch"）提前解析第三方域名的 IP、减少域名数量、使用 CDN 的智能 DNS 解析。',
     tags: ["WebSocket", "实时通信", "SSE", "网络"],
   },
   {
@@ -43,7 +43,7 @@ export const networkData: KnowledgePoint[] = [
     category: "network",
     difficulty: 2,
     question: "CDN 的工作原理是什么？如何优化 CDN 使用？",
-    answer: "CDN (Content Delivery Network)：分布式缓存网络\n\n工作原理：\n1. 用户请求域名\n2. DNS 解析到最近的 CDN 节点（基于 IP 地理位置）\n3. CDN 节点有缓存则直接返回\n4. 无缓存则回源站获取并缓存\n\n优化策略：\n1. 合理设置缓存过期时间\n2. 文件名加哈希实现长期缓存\n3. 预热：提前将资源推送到 CDN\n4. 多域名突破并发限制（HTTP/1.1）\n5. 开启 HTTP/2 和 Gzip/Brotli 压缩\n6. 使用 WebP/AVIF 等现代图片格式\n7. 静态资源与动态 API 分离",
+    answer: '浏览器缓存策略核心：强缓存（Cache-Control: max-age=31536000，一年不变的内容直接缓存）和协商缓存（ETag/Last-Modified，内容可能变了需要验证）。前端资源文件用 content hash 命名——main.abc123.js——内容变了 hash 变 URL 变，天然强缓存。HTML 用协商缓存——每次都验证是否更新。Service Worker 做更精细的缓存控制（离线可用）。',
     tags: ["CDN", "缓存", "网络", "优化"],
   },
   {
@@ -52,7 +52,7 @@ export const networkData: KnowledgePoint[] = [
     category: "network",
     difficulty: 1,
     question: "DNS 解析的完整流程是什么？如何优化 DNS 解析？",
-    answer: "DNS 解析流程：\n1. 浏览器缓存 → 系统 DNS 缓存 → 路由器缓存\n2. 本地 DNS 服务器 (LDNS)\n3. 根域名服务器 → 顶级域名服务器 → 权威域名服务器\n4. 返回 IP 地址，层层缓存\n\n解析类型：\n- A 记录：域名 → IPv4\n- AAAA 记录：域名 → IPv6\n- CNAME：域名别名\n- MX：邮件服务器\n\n优化策略：\n- DNS 预解析：<link rel=\"dns-prefetch\" href=\"//cdn.example.com\">\n- 减少域名数量（减少 DNS 查询）\n- 使用 CDN 的 CNAME 解析\n- 合理设置 DNS TTL\n- HTTPDNS：绕过运营商 DNS 劫持",
+    answer: 'CDN 是内容分发网络——把静态资源（JS/CSS/图片/视频）缓存到离用户最近的边缘节点，用户从最近的节点取数据，快很多。核心原理：DNS 解析时返回离用户最近的 CDN 节点 IP、回源策略（CDN 节点上没有就去源站拉并缓存）、缓存刷新（内容更新后主动 purge CDN 缓存）。前端项目里 js/css 文件带 hash 文件名是最好的 CDN 策略——天然支持长期缓存和更新。',
     tags: ["DNS", "域名解析", "网络优化"],
   },
 {
@@ -61,7 +61,7 @@ export const networkData: KnowledgePoint[] = [
     category: "network",
     difficulty: 1,
     question: "HTTP 常见的状态码有哪些？各自的含义？",
-    answer: "1xx 信息：100 Continue, 101 Switching Protocols\n\n2xx 成功：\n- 200 OK：请求成功\n- 201 Created：创建成功（POST）\n- 204 No Content：成功但无返回体\n\n3xx 重定向：\n- 301 Moved Permanently：永久重定向（新 URL）\n- 302 Found：临时重定向\n- 304 Not Modified：协商缓存，使用缓存\n\n4xx 客户端错误：\n- 400 Bad Request：请求错误\n- 401 Unauthorized：未认证\n- 403 Forbidden：无权限\n- 404 Not Found：资源不存在\n- 405 Method Not Allowed\n- 429 Too Many Requests：限流\n\n5xx 服务端错误：\n- 500 Internal Server Error\n- 502 Bad Gateway：网关错误\n- 503 Service Unavailable：服务不可用\n- 504 Gateway Timeout：网关超时",
+    answer: 'RESTful API 设计原则：资源用名词（/users 不是 /getUsers）、HTTP 方法表示操作（GET 查、POST 增、PUT 改、DELETE 删）、状态码表示结果（200 成功、201 创建、400 参数错、401 未认证、404 不存在、500 服务错）。和 GraphQL 对比：REST 是服务端定义数据结构（返回什么由服务端决定），GraphQL 是客户端指定要什么字段（减少过度获取）。REST 简单直观适合大多数场景，GraphQL 适合复杂关联数据和移动端按需获取。',
     tags: ["HTTP", "状态码", "网络"],
   },
   {
@@ -70,7 +70,7 @@ export const networkData: KnowledgePoint[] = [
     category: "network",
     difficulty: 1,
     question: "HTTP 常用的请求头和响应头有哪些？各自的作用？",
-    answer: "请求头：\n- Authorization：认证信息（Bearer token）\n- Content-Type：请求体类型（application/json）\n- Accept：接受的响应类型\n- User-Agent：客户端信息\n- Cookie：携带 Cookie\n- Referer：来源页面\n- Cache-Control：缓存控制\n- If-None-Match/If-Modified-Since：协商缓存\n\n响应头：\n- Content-Type：响应体类型\n- Content-Encoding：压缩方式（gzip, br）\n- Cache-Control：缓存策略\n- ETag：资源版本标识\n- Access-Control-Allow-Origin：跨域允许\n- Set-Cookie：设置 Cookie\n- Location：重定向地址\n- Strict-Transport-Security：强制 HTTPS",
+    answer: 'JWT 是无状态的认证方案。登录成功后服务端生成 JWT（header.payload.signature），客户端存起来，每次请求带 Authorization: Bearer <token>。服务端验证签名就行——不需要查数据库和 session。优势是无状态（服务端无需存储，适合分布式）、跨域友好。劣势是无法主动失效（除非加黑名单）、payload 是 base64 编码（不是加密，不能存敏感信息）。和 Session 对比：Session 是服务端存状态，JWT 是客户端带状态——各有适用场景。',
     tags: ["HTTP", "请求头", "响应头", "网络"],
   }
 ]

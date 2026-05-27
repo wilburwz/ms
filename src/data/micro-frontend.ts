@@ -7,7 +7,7 @@ export const microFrontendData: KnowledgePoint[] = [
     category: "micro-frontend",
     difficulty: 2,
     question: "微前端架构解决什么问题？与传统单体前端相比有什么价值？",
-    answer: "解决的问题：\n- 多团队并行开发，技术栈不统一\n- 大型应用构建慢、部署耦合\n- 增量升级困难（如 Vue2→Vue3）\n- 团队规模膨胀导致的协作成本\n\n核心价值：\n1. 独立部署：子应用可独立发布\n2. 技术栈无关：不同子应用可用不同框架\n3. 增量升级：逐步替换旧模块\n4. 团队自治：各团队独立开发\n5. 隔离性：运行时互不影响\n\n代价：\n- 架构复杂度增加\n- 性能开销（资源加载）\n- 样式/JS 隔离挑战",
+    answer: '微前端是把一个大的前端应用拆成多个独立的小应用，各自独立开发、独立部署、独立技术栈，但在用户看来是一个完整的应用。适合场景：多个团队并行开发、老系统渐进式升级（新功能用新技术栈，老功能保持不动）、大型后台系统功能模块间确实独立。方案：qiankun（基于 single-spa，阿里出品）、Module Federation（Webpack 5 原生支持）。',
     tags: ["微前端", "架构", "qiankun"],
   },
   {
@@ -16,7 +16,7 @@ export const microFrontendData: KnowledgePoint[] = [
     category: "micro-frontend",
     difficulty: 3,
     question: "qiankun 是如何实现子应用加载和沙箱隔离的？",
-    answer: "qiankun 基于 Single-SPA，提供了开箱即用的能力。\n\n子应用加载流程：\n1. registerMicroApps 注册子应用\n2. 路由匹配 → 加载 HTML 入口\n3. 解析 HTML → 提取 JS/CSS\n4. 执行 JS（沙箱中）\n5. 挂载到容器 DOM\n\nJS 沙箱：\n- SnapshotSandbox：快照沙箱，激活时恢复快照，失活时记录变更（单实例）\n- ProxySandbox：多实例沙箱，每个子应用有独立 fakeWindow\n- LegacySandbox：单实例 Proxy 沙箱\n\nCSS 隔离：\n- Shadow DOM（strictStyleIsolation）\n- 添加命名空间前缀（experimentalStyleIsolation）",
+    answer: '微前端的核心挑战：CSS 隔离（不同子应用的样式互相污染——用 CSS Modules 或 Shadow DOM 解决）、JS 隔离（全局变量冲突——用沙箱机制）、应用间通信（通过自定义事件或共享状态库）、公共依赖（react、vue 这种大库多个子应用都引用，白增加体积——external 共享）、路由协同（多个子应用的 routing 怎么拼成完整路由）。',
     codeExample: "// qiankun 注册子应用\nimport { registerMicroApps, start } from 'qiankun'\n\nregisterMicroApps([{\n  name: 'app1',\n  entry: '//localhost:7101',\n  container: '#sub-viewport',\n  activeRule: '/app1',\n  props: { data: sharedData }\n}])\n\nstart({ sandbox: { experimentalStyleIsolation: true } })",
     tags: ["qiankun", "微前端", "沙箱", "Single-SPA"],
   }
